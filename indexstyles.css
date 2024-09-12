@@ -116,6 +116,7 @@ h1 {
 .team-container {
     display: flex;
     flex-wrap: wrap;
+    /* justify-content: space-around; */
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -145,7 +146,7 @@ h1 {
     height: 80px;
     object-fit: cover;
     transition: transform 0.4s;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
 }
 
 .team-member:hover img {
@@ -231,4 +232,67 @@ h1 {
 
 .more-info:hover {
     background-color: #0c2846;
+}
+
+/* Base styles (Desktop) - Your current styles go here */
+@media screen and (max-width: 1024px) {
+    /* Tablet styles */
+    .profiles {
+        padding: 40px 10px;
+    }
+
+    .profiles .profile {
+        max-width: 90%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .team-container {
+        gap: 5px;
+    }
+
+    .team-member {
+        width: 150px;
+        height: 180px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* Mobile styles */
+    .profiles {
+        padding: 20px 5px;
+    }
+
+    .profiles .profile {
+        max-width: 95%;
+        margin: 10px auto;
+    }
+
+    .team-member {
+        width: 120px;
+        height: 150px;
+    }
+
+    .team-member img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .profile-header h2 {
+        font-size: 18px;
+    }
+
+    .profile-header p, .profile-content p {
+        font-size: 14px;
+    }
+    
+    .team-intro h1 {
+        width: auto;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    .team-intro p {
+        margin: 0 10px;
+    }
 }
