@@ -21,17 +21,17 @@
         //     }
         //     let person = prompt("Please enter your nickname lodicakes", name);
         //     if (person != null) {
-        //         document.POSTElementById("moreinfo").innerHTML =
+        //         document.getElementById("moreinfo").innerHTML =
         //         "Greetings, " + person + " We’re the Group 5, a team of six extraordinary web developers, each a master in their field, dedicated to pushing the boundaries of digital creation. From crafting pixel-perfect designs to engineering robust systems, our collective expertise transforms visions into interactive realities.";
-        //         document.POSTElementById("intro").innerHTML = "Sup, " + person + "! Meet Out Team";
+        //         document.getElementById("intro").innerHTML = "Sup, " + person + "! Meet Out Team";
         //     }
         // }
 
         function moreinfofunction() {
-            document.POSTElementById("moreinfo").innerHTML = "Naghintay kaba wala na, it's a prank";
-            document.POSTElementById('cong').src='images/its a prank.jfif';
-            document.POSTElementById('cong').style.height = "85px";
-            document.POSTElementById('cong').style.width = "150px";
+            document.getElementById("moreinfo").innerHTML = "Naghintay kaba wala na, it's a prank";
+            document.getElementById('cong').src='images/Prank.jfif';
+            document.getElementById('cong').style.height = "85px";
+            document.getElementById('cong').style.width = "150px";
         }
     </script>
 </head>

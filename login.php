@@ -16,7 +16,7 @@
         <img src="images\favicon.ico" alt="Icon" class="icon-img" />
       </div>
       <p class="title">Login</p>
-        <form class="form" action="index.php" method="POST" onsubmit="return validateUsername()">
+        <form class="form" action="index.php" method="POST" onsubmit="return validateAccount()">
         <div class="input-group">
           <label for="username">Username</label>
           <input
@@ -105,9 +105,8 @@
       </p>
     </div>
 
-    <!-- Inline JavaScript function to validate the username -->
     <script>
-      function validateUsername() {
+      function validateAccount() {
         // List of allowed usernames
         const allowedUsernames = [
           'Marcelino',
@@ -118,12 +117,36 @@
           'Alfaro',
         ];
 
-        // Get the username input value
-        const username = document.getElementById('username').value.trim();
+        // List of allowed passwords
+        const allowedPasswords = [
+          'Admin',
+          'Boss',
+        ];
+
+        // Get the username input value and sanitize it
+        const username = sanitizeInput(document.getElementById('username').value.trim());
+
+        // Get the password input value
+        const password = document.getElementById('password').value.trim();
+
+        // Function to sanitize user input by escaping HTML special characters
+        function sanitizeInput(input) {
+          return input.replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+        }
 
         // Check if the username is in the allowed list
         if (!allowedUsernames.includes(username)) {
-          alert('This username does not have an account. Please use a valid username.');
+          alert('This username does not have an account or invalid. Please use a valid username.');
+          return false; // Prevent form submission
+        }
+
+        // Check if the username is in the allowed list
+       if (!allowedPasswords.includes(password)) {
+          alert('This password is invalid. Please use a valid password.');
           return false; // Prevent form submission
         }
 
