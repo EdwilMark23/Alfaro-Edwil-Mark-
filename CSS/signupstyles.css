@@ -8,7 +8,7 @@
 
 /* Body Styling */
 body {
-  background-image: url("images/Background.jpg");
+  background-image: url("../images/Background.jpg");
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
