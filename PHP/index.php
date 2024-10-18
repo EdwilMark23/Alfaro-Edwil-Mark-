@@ -1,20 +1,8 @@
-<?php include '../View/header.php'; ?>
-
-<title>Kampon ni Aries</title>
-<link rel="stylesheet" href="../CSS/indexstyles.css">
-
-<script>
-    function moreinfofunction() {
-        document.getElementById("moreinfo").innerHTML = "Naghintay kaba wala na, it's a prank";
-        document.getElementById('cong').src = '../images/Prank.jfif';
-        document.getElementById('cong').style.height = "85px";
-        document.getElementById('cong').style.width = "150px";
-    }
-</script>
-
 <?php
+session_start(); // Start a session
+
 // Default user information
-$username = "";
+$username = isset($_COOKIE["username"]) ? $_COOKIE["username"] : ""; // Retrieve cookie
 $newuser = "";
 $role = "";
 $desc = "";
@@ -22,16 +10,17 @@ $age = "";
 $address = "";
 $hobbies = "";
 
-if ($_POST["id"] == "login") {
-    // POST user information from login form
-    $username = $_POST["username"];
-} else {
-    // POST user information from sign up form
-    $username = $_POST["username"];
-    $desc = $_POST["bio"];
-    $age = $_POST["age"];
-    $address = $_POST["address"];
-    $hobbies = $_POST["hobbies"];
+// Check for both login and signup
+if (isset($_POST["id"]) == "login" || isset($_POST["id"]) == "signup") { 
+    // POST user information from login or sign up form
+    $username = isset($_POST["username"]) ? filter_var($_POST["username"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
+    $desc = isset($_POST["bio"]) ? filter_var($_POST["bio"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
+    $age = isset($_POST["age"]) ? filter_var($_POST["age"], FILTER_SANITIZE_NUMBER_INT) : ""; // Sanitize input
+    $address = isset($_POST["address"]) ? filter_var($_POST["address"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
+    $hobbies = isset($_POST["hobbies"]) ? filter_var($_POST["hobbies"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
+
+    // Set a cookie to remember the username for 30 days
+    setcookie("username", $username, time() + (30 * 24 * 60 * 60));
 }
 
 // New member prompt
@@ -52,6 +41,13 @@ if ($username != "Marcelino" && $username != "Cedeno" && $username != "Rivas" &&
     // $age = $tempage;
     // $address = $tempaddress;
     // $hobbies = $hobbies;
+
+    // Store user information in session
+    $_SESSION['role'] = $temprole; // Store role in session
+    $_SESSION['desc'] = $desc; // Store bio in session
+    $_SESSION['age'] = $age; // Store age in session
+    $_SESSION['address'] = $address; // Store address in session
+    $_SESSION['hobbies'] = $hobbies; // Store hobbies in session
 } else {
     $member = $username;
 }
@@ -62,7 +58,22 @@ $rivas = "Jose Emmanuel Rivas";
 $bunyi = "John Michael Bunyi";
 $falcon = "Frederick Falcon";
 $alfaro = "Edwil Mark Alfaro";
+
+include '../View/header.php';
 ?>
+
+<title>Kampon ni Aries</title>
+<link rel="stylesheet" href="../CSS/indexstyles.css">
+
+<script>
+    function moreinfofunction() {
+        document.getElementById("moreinfo").innerHTML = "Naghintay kaba wala na, it's a prank";
+        document.getElementById('cong').src = '../images/Prank.jfif';
+        document.getElementById('cong').style.height = "85px";
+        document.getElementById('cong').style.width = "150px";
+    }
+</script>
+
 <section id="team-section" class="team-section">
     <h1 id="intro"> Sup <?php echo $member ?>! Meet Our Team</h1>
     <div class="team-container">
