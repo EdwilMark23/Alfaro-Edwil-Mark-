@@ -1,5 +1,6 @@
 <?php
 session_start(); // Start a session
+include '../View/connect.php'; // Include your database connection file
 
 // Default user information
 $username = isset($_COOKIE["username"]) ? $_COOKIE["username"] : ""; // Retrieve cookie
@@ -10,46 +11,52 @@ $age = "";
 $address = "";
 $hobbies = "";
 
-// Check for both login and signup
-if (isset($_POST["id"]) == "login" || isset($_POST["id"]) == "signup") { 
-    // POST user information from login or sign up form
-    $username = isset($_POST["username"]) ? filter_var($_POST["username"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
-    $desc = isset($_POST["bio"]) ? filter_var($_POST["bio"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
-    $age = isset($_POST["age"]) ? filter_var($_POST["age"], FILTER_SANITIZE_NUMBER_INT) : ""; // Sanitize input
-    $address = isset($_POST["address"]) ? filter_var($_POST["address"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
-    $hobbies = isset($_POST["hobbies"]) ? filter_var($_POST["hobbies"], FILTER_SANITIZE_FULL_SPECIAL_CHARS) : ""; // Sanitize input
+// Check if username exists in the database
+if (!empty($username)) {
+    // Prepare SQL query to fetch user information from the database
+    $sql = "SELECT * FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    // Set a cookie to remember the username for 30 days
-    setcookie("username", $username, time() + (30 * 24 * 60 * 60));
-}
+    // Check if the user exists in the database
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        
+        // Assign user data to variables
+        $newuser = $user['username'];
+        $role = isset($user['role']) ? $user['role'] : ''; // Fetch the role correctly
+        $desc = isset($user['bio']) ? $user['bio'] : ''; // Fetch bio correctly
+        $age = isset($user['age']) ? $user['age'] : ''; // Fetch age correctly
+        $address = isset($user['address']) ? $user['address'] : ''; // Fetch address correctly
+        $hobbies = isset($user['hobbies']) ? $user['hobbies'] : ''; // Fetch hobbies correctly
 
-// New member prompt
-$new = "New Member ";
+        // Store user information in session
+        $_SESSION['role'] = $role; // Store role in session
+        $_SESSION['desc'] = $desc; // Store bio in session
+        $_SESSION['age'] = $age; // Store age in session
+        $_SESSION['address'] = $address; // Store address in session
+        $_SESSION['hobbies'] = $hobbies; // Store hobbies in session
 
-// Temporary informations
-$temprole = "Apprentice Developer";
-// $tempdesc = "Evolution 999";
-// $tempage = "21 years old";
-// $tempaddress = "Kila Malupiton";
-// $temphobbies = "Hobbies: Knock Knock Mann";
+        $member = "Welcome, $newuser!";
+    } else {
+        // User not found in the database, treat as a new member
+        $newuser = $username; // Still use the username from cookie
+        $member = "New Member $newuser!";
+        $role = "Apprentice Developer"; // Default role for new members
 
-if ($username != "Marcelino" && $username != "Cedeno" && $username != "Rivas" && $username != "Bunyi" && $username != "Falcon" && $username != "Alfaro") {
-    $newuser = $username;
-    $member = $new . $newuser;
-    $role = $temprole;
-    // $desc = $tempdesc;
-    // $age = $tempage;
-    // $address = $tempaddress;
-    // $hobbies = $hobbies;
+        // Store new user information in session
+        $_SESSION['role'] = $role; // Store role in session
+        $_SESSION['desc'] = "Welcome to our community!"; // Default description for new users
+        $_SESSION['age'] = ""; // Default values for new users
+        $_SESSION['address'] = ""; // Default values for new users
+        $_SESSION['hobbies'] = ""; // Default values for new users
+    }
 
-    // Store user information in session
-    $_SESSION['role'] = $temprole; // Store role in session
-    $_SESSION['desc'] = $desc; // Store bio in session
-    $_SESSION['age'] = $age; // Store age in session
-    $_SESSION['address'] = $address; // Store address in session
-    $_SESSION['hobbies'] = $hobbies; // Store hobbies in session
+    $stmt->close(); // Close the statement
 } else {
-    $member = $username;
+    $member = "Guest"; // Handle case when username is empty
 }
 
 $marcelino = "Geminaries Marcelino";

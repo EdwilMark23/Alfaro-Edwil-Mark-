@@ -1,4 +1,35 @@
-<?php include '../View/header.php'; ?>
+<?php
+  include '../View/header.php';
+  //Include database connection
+ include '../View/connect.php';
+
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_signup'])) {
+  // Get form data
+  $username = $_POST['username'];
+  $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hashing the password for security
+  $bio = $_POST['bio'];
+  $age = $_POST['age'];
+  $address = $_POST['address'];
+  $hobbies = $_POST['hobbies'];
+
+  // Prepare SQL statement
+  $sql = "INSERT INTO users (username, password, bio, age, address, hobbies) 
+          VALUES ('$username', '$password', '$bio', '$age', '$address', '$hobbies')";
+
+  // Execute SQL statement
+  if ($conn->query($sql) === TRUE) {
+    echo "Your account is created successfully";
+    header("Location:../PHP/login.php"); // Redirect to home page after successful signup
+    exit(); // Stop the script from executing further after successful signup
+  } else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+}
+
+// Close the connection
+$conn->close();
+
+?>
 
 <script>
   function showHint(str) {
@@ -28,7 +59,7 @@
     <img src="../images/favicon.ico" alt="Icon" class="icon-img" />
   </div>
   <p class="title"> <?php echo "Sign Up in " . $_GET["group"] . " " . $_GET["section"]; ?> </p>
-  <form class="form" action="index.php" method="POST">
+  <form class="form" action="signup.php" method="POST">
     <div class="input-group">
       <label for="username">Username</label>
       <input
@@ -89,9 +120,7 @@
         name="id"
         value="signup" />
     </div>
-    <a href="index.php">
-      <button class="sign" name="submit_signup">Sign Up</button>
-    </a>
+    <button class="sign" name="submit_signup">Sign Up</button>
   </form>
 
   <div class="social-message">

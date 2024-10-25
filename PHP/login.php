@@ -1,4 +1,48 @@
-<?php include '../View/header.php'; ?>
+<?php
+include '../View/header.php';
+// Include database connection
+include '../View/connect.php';
+
+// Initialize an error message variable
+$error_message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_login'])) {
+  // Get the submitted username and password
+  $username = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+  $password = $_POST['password']; // Raw password input for hashing
+
+  // Prepare and execute SQL query to fetch the user
+  $sql = "SELECT * FROM users WHERE username = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $username); // Bind the username parameter
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows > 0) {
+    // User found, now check the password
+    $user = $result->fetch_assoc();
+    if (password_verify($password, $user['password'])) {
+      // Password is correct, start session or redirect to homepage
+      session_start();
+      $_SESSION['username'] = $user['username']; // Store user data in session
+      // Set the cookie for username
+      setcookie("username", $user['username'], time() + (30 * 24 * 60 * 60), "/"); // Cookie set here
+
+      header("Location:../PHP/index.php");
+      exit();
+    } else {
+      // Invalid password
+      $error_message = "Invalid username or password"; // Set error message
+    }
+  } else {
+     // User not found
+     $error_message = "Invalid username or password"; // Set error message
+  }
+
+  $stmt->close(); // Close the statement
+}
+
+?>
 
 <title>Kampon ni Aries Login</title>
 <link rel="stylesheet" href="../CSS/loginstyles.css" />
@@ -10,7 +54,7 @@
     <img src="../images/favicon.ico" alt="Icon" class="icon-img" />
   </div>
   <p class="title">Login</p>
-  <form class="form" action="index.php" method="POST" onsubmit="return validateAccount()">
+  <form class="form" action="login.php" method="POST">
     <div class="input-group">
       <label for="username">Username</label>
       <input
@@ -28,6 +72,9 @@
         id="password"
         placeholder="Enter your password"
         required />
+        <?php if ($error_message): ?>
+          <p class="error"><?php echo $error_message; ?></p> <!-- Display error message here -->
+        <?php endif; ?>
       <input
         type="hidden"
         name="id"
@@ -36,9 +83,7 @@
     <div class="forgot">
       <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
     </div>
-    <a href="index.php">
-      <button class="sign" name="submit_login">Sign in</button>
-    </a>
+    <button class="sign" name="submit_login">Sign in</button>
   </form>
   <div class="social-message">
     <div class="line"></div>
@@ -89,54 +134,5 @@
     <a href="signup.php?group=Kampon ni Aries&section=IT3M">Sign up</a>
   </p>
 </div>
-
-<script>
-  function validateAccount() {
-    // List of allowed usernames
-    const allowedUsernames = [
-      'Marcelino',
-      'Cedeno',
-      'Rivas',
-      'Bunyi',
-      'Falcon',
-      'Alfaro',
-    ];
-
-    // List of allowed passwords
-    const allowedPasswords = [
-      'Admin',
-      'Boss',
-    ];
-
-    // Get the username input value and sanitize it
-    const username = sanitizeInput(document.getElementById('username').value.trim());
-
-    // Get the password input value
-    const password = document.getElementById('password').value.trim();
-
-    // Function to sanitize user input by escaping HTML special characters
-    function sanitizeInput(input) {
-      return input.replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // Check if the username is in the allowed list
-    if (!allowedUsernames.includes(username)) {
-      alert('This username does not have an account or invalid. Please use a valid username.');
-      return false; // Prevent form submission
-    }
-
-    // Check if the username is in the allowed list
-    if (!allowedPasswords.includes(password)) {
-      alert('This password is invalid. Please use a valid password.');
-      return false; // Prevent form submission
-    }
-
-    return true; // Allow form submission
-  }
-</script>
 
 <?php include '../View/footer.php'; ?>
